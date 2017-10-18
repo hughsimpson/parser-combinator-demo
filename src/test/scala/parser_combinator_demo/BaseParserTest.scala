@@ -16,17 +16,18 @@ class BaseParserTest extends FreeSpec with Matchers {
       }
     }
 
-    "parse a string" in {
-      val in = """ "lzidjf#®•uy9w84منy!\"" """
-      val expected = """lzidjf#®•uy9w84منy!""""
+    "parse a url" in {
+      val in = """"https://hostdomain.com/service1/v1""""
+      val expected = "https://hostdomain.com/service1/v1"
       baseParser.parse(baseParser.str, in) match {
         case Success(`expected`, _) => succeed
         case _ => fail("string parsing failed")
       }
     }
-    "parse a url" in {
-      val in = """"https://hostdomain.com/service1/v1""""
-      val expected = "https://hostdomain.com/service1/v1"
+
+    "parse a string" in {
+      val in = """ "lzidjf#®•uy9w84منy!\"" """
+      val expected = """lzidjf#®•uy9w84منy!""""
       baseParser.parse(baseParser.str, in) match {
         case Success(`expected`, _) => succeed
         case _ => fail("string parsing failed")

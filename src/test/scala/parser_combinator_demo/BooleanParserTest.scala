@@ -54,16 +54,16 @@ class BooleanParserTest extends FreeSpec with Matchers {
       Set(in._1, "default").contains(pair._1) && !Set(in._2).contains(pair._2)
     def fmt(in: (String, String))(x: String) = String.format(x, in._1, in._2)
     "case 1" in {
-      val in = ("foo", "twenty")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "twenty :: foo"
+      val in = ("foo", "20")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "20 :: foo"
     }
     "case 2" in {
-      val in = ("bar", "thirty")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "thirty ::: bar"
+      val in = ("bar", "30")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "30 ::: bar"
     }
     "case 3" in {
-      val in = ("foobar", "forty")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "fallback[foobar, forty]"
+      val in = ("foobar", "40")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "fallback[foobar, 40]"
     }
     "case 4" in {
       val in = ("bar", "default")

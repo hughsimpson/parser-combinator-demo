@@ -10,20 +10,20 @@ class ArabicTest extends FreeSpec with Matchers {
       Set(in._1, "default").contains(pair._1) && !Set(in._2).contains(pair._2)
     def fmt(in: (String, String))(x: String) = String.format(x, in._1, in._2)
     "case 1" in {
-      val in = ("foo", "twenty")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "twenty خدران في رجل foo"
+      val in = ("foo", "20")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "20 نعم foo"
     }
     "case 2" in {
-      val in = ("bar", "thirty")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "thirty خدران في رجل bar"
+      val in = ("bar", "30")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "30 لا bar"
     }
     "case 3" in {
-      val in = ("foobar", "forty")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "خدران في رجل[foobar, forty]"
+      val in = ("foobar", "40")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "خدران في رجل[foobar, 40]"
     }
     "case 4" in {
       val in = ("bar", "default")
-      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "خدران في رجل: bar, default"
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "عند: bar, default"
     }
   }
   "evaluate some more complex boolean expressions with variables (arabic)" - {
