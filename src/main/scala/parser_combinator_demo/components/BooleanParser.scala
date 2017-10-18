@@ -1,16 +1,5 @@
 package parser_combinator_demo.components
 
-
-sealed trait Cond[T] {
-  def eval(fn: T => Boolean): Boolean
-}
-case class StringCondLeaf(v: String) extends Cond[String] {
-  def eval(fn: String => Boolean): Boolean = fn(v)
-}
-case class QuestionCondLeaf(n1: String, n2: String) extends Cond[(String, String)] {
-  def eval(fn: ((String, String)) => Boolean): Boolean = fn((n1, n2))
-}
-
 trait BooleanParser extends BaseParsers {
   // Constants
   lazy val fAnd = literal("&&") ^^^ AndCond
