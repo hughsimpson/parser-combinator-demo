@@ -6,7 +6,6 @@ import parser_combinator_demo.configParsers.{BooleanConfigParser, Functs}
 class ArabicTest extends FreeSpec with Matchers {
 
   def runTest(logicModel: Functs[(String, String)]) = {
-    val logicModel = BooleanConfigParser.parseConfig("arabic.conf").myMoreComplexLogicModel
     def meetsConditions(in: (String, String))(pair: (String, String)) =
       Set(in._1, "default").contains(pair._1) && !Set(in._2).contains(pair._2)
     def fmt(in: (String, String))(x: String) = String.format(x, in._1, in._2)
