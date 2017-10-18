@@ -17,11 +17,8 @@ case object OrCond extends BinaryCond
 sealed trait BooleanNode[T] {
   def eval(fn: T => Boolean): Boolean
 }
-case class BooleanLeaf1(v: String) extends BooleanNode[String] {
-  def eval(fn: String => Boolean): Boolean = fn(v)
-}
-case class BooleanLeaf2(p1: String, p2: String) extends BooleanNode[(String, String)] {
-  def eval(fn: ((String, String)) => Boolean): Boolean = fn((p1, p2))
+case class BooleanLeaf[T](v: T) extends BooleanNode[T] {
+  def eval(fn: T => Boolean): Boolean = fn(v)
 }
 case class UnaryNode[T](condType: UnaryCond, cond: BooleanNode[T]) extends BooleanNode[T] {
   def eval(fn: T => Boolean): Boolean = {

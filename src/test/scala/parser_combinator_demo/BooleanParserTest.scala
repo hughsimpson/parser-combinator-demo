@@ -3,30 +3,30 @@ package parser_combinator_demo
 import scala.collection.immutable.ListMap
 
 import org.scalatest.{FreeSpec, Matchers}
-import parser_combinator_demo.components.{AndCond, BinaryNode, BooleanLeaf1, BooleanLeaf2, NotCond, OrCond, UnaryNode}
+import parser_combinator_demo.components.{AndCond, BinaryNode, BooleanLeaf, NotCond, OrCond, UnaryNode}
 import parser_combinator_demo.configParsers.{BooleanConfig, BooleanConfigParser, Funct, Functs}
 
 class BooleanParserTest extends FreeSpec with Matchers {
   "boolean config parsing" in {
     val model1 = Functs[String](Map(
       "ns1" -> Funct(ListMap(
-        BinaryNode(AndCond,List(BooleanLeaf1("var1"), BinaryNode(OrCond,List(BooleanLeaf1("var2"), BooleanLeaf1("var3"))))) -> "met condition 1",
-        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf1("var1")), UnaryNode(NotCond,BooleanLeaf1("var2")), UnaryNode(NotCond,BooleanLeaf1("var3")))) -> "met condition 2",
-        BooleanLeaf1("default") -> "fallback")),
+        BinaryNode(AndCond,List(BooleanLeaf("var1"), BinaryNode(OrCond,List(BooleanLeaf("var2"), BooleanLeaf("var3"))))) -> "met condition 1",
+        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf("var1")), UnaryNode(NotCond,BooleanLeaf("var2")), UnaryNode(NotCond,BooleanLeaf("var3")))) -> "met condition 2",
+        BooleanLeaf("default") -> "fallback")),
       "ns2" -> Funct(ListMap(
-        BinaryNode(AndCond,List(BinaryNode(OrCond,List(BooleanLeaf1("var1"), BooleanLeaf1("var2"))), BinaryNode(OrCond,List(BooleanLeaf1("var3"), UnaryNode(NotCond,BooleanLeaf1("var4")))))) -> "met condition 1",
-        BooleanLeaf1("default") -> "fallback"))))
+        BinaryNode(AndCond,List(BinaryNode(OrCond,List(BooleanLeaf("var1"), BooleanLeaf("var2"))), BinaryNode(OrCond,List(BooleanLeaf("var3"), UnaryNode(NotCond,BooleanLeaf("var4")))))) -> "met condition 1",
+        BooleanLeaf("default") -> "fallback"))))
 
     val model2 = Functs[(String, String)](Map(
       "ns1" -> Funct(ListMap(
-        BooleanLeaf2("foo","baz") -> "%2$s :: %1$s",
-        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf2("foo","bar")), BooleanLeaf2("bar","default"))) -> "%2$s ::: %1$s",
-        BooleanLeaf2("default","default") -> "fallback[%s, %s]",
-        BooleanLeaf2("default","failed") -> "FAIL: %s, %s")),
+        BooleanLeaf("foo","baz") -> "%2$s :: %1$s",
+        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf("foo","bar")), BooleanLeaf("bar","default"))) -> "%2$s ::: %1$s",
+        BooleanLeaf("default","default") -> "fallback[%s, %s]",
+        BooleanLeaf("default","failed") -> "FAIL: %s, %s")),
       "ns2" -> Funct(ListMap(
-        BooleanLeaf2("^.*baz","quux") -> "met condition 1",
-        BooleanLeaf2("default","failed") -> "FAIL",
-        BooleanLeaf2("default","default") -> "fallback"))))
+        BooleanLeaf("^.*baz","quux") -> "met condition 1",
+        BooleanLeaf("default","failed") -> "FAIL",
+        BooleanLeaf("default","default") -> "fallback"))))
 
     BooleanConfigParser.parseConfig("binary.conf") shouldEqual BooleanConfig("YES", "NO", model1, model2)
   }

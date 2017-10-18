@@ -3,7 +3,7 @@ package parser_combinator_demo.configParsers
 import scala.collection.immutable.ListMap
 
 import parser_combinator_demo.Utils.slurpRsc
-import parser_combinator_demo.components.{BooleanLeaf1, BooleanLeaf2, BooleanNode, BooleanParser}
+import parser_combinator_demo.components.{BooleanLeaf, BooleanNode, BooleanParser}
 
 case class Funct[T](fs: ListMap[BooleanNode[T], String]) {
   def apply(t: T => Boolean): Option[String] = fs collectFirst { case (k, v) if k.eval(t) => v }
@@ -17,10 +17,10 @@ case class BooleanConfig(`true`: String = "true",
 
 
 object BooleanConfigParser extends BooleanParser {
-  lazy val boolLeaf1: Parser[BooleanLeaf1] = s ^^ { BooleanLeaf1 }
-  lazy val boolLeaf2: Parser[BooleanLeaf2] =
-    s ~^~ `(..)`(bareWord) ^^ { case pos ~ elem => BooleanLeaf2(pos, elem) } |
-    s ^^ { BooleanLeaf2(_, default) }
+  lazy val boolLeaf1: Parser[BooleanLeaf[String]] = s ^^ { BooleanLeaf(_) }
+  lazy val boolLeaf2: Parser[BooleanLeaf[(String, String)]] =
+    s ~^~ `(..)`(bareWord) ^^ { case pos ~ elem => BooleanLeaf(pos, elem) } |
+    s ^^ { BooleanLeaf(_, default) }
 
   lazy val boolStruct1: Parser[BooleanNode[String]] = condWithNot(boolLeaf1)
   lazy val boolStruct2: Parser[BooleanNode[(String, String)]] = condWithNot(boolLeaf2)
