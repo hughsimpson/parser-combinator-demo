@@ -9,7 +9,7 @@ trait BaseParsers extends RegexParsers with JavaTokenParsers {
   val str: Parser[String] = stringLiteral ^^ { s => s.substring(1, s.length-1)
     .replaceAll("""\\\"""", "\"")
     .replaceAll("""\\\\""", """\\""")
-//    .replaceAll("/([0-9]+)/", "%$1\\$s")
+    .replaceAll("/([0-9]+)/", "%$1\\$s")
   }
   val s: Parser[String] = bareWord | str
   val int: Parser[Int] = bareWord ^^ { _.toInt }

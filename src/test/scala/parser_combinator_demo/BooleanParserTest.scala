@@ -9,31 +9,66 @@ import parser_combinator_demo.configParsers.{BooleanConfig, BooleanConfigParser,
 class BooleanParserTest extends FreeSpec with Matchers {
   "boolean config parsing" in {
     val model1 = Functs[String](Map(
-      "iri1" -> Funct(ListMap(
-        BinaryNode(AndCond,List(BooleanLeaf1("foo"), BinaryNode(OrCond,List(BooleanLeaf1("bar"), BooleanLeaf1("baz"))))) -> "met condition 1",
-        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf1("foo")), UnaryNode(NotCond,BooleanLeaf1("bar")), UnaryNode(NotCond,BooleanLeaf1("baz")))) -> "met condition 2",
+      "ns1" -> Funct(ListMap(
+        BinaryNode(AndCond,List(BooleanLeaf1("var1"), BinaryNode(OrCond,List(BooleanLeaf1("var2"), BooleanLeaf1("var3"))))) -> "met condition 1",
+        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf1("var1")), UnaryNode(NotCond,BooleanLeaf1("var2")), UnaryNode(NotCond,BooleanLeaf1("var3")))) -> "met condition 2",
         BooleanLeaf1("default") -> "fallback")),
-      "iri2" -> Funct(ListMap(
-        BinaryNode(AndCond,List(BinaryNode(OrCond,List(BooleanLeaf1("foo"), BooleanLeaf1("bar"))), BinaryNode(OrCond,List(BooleanLeaf1("baz"), UnaryNode(NotCond,BooleanLeaf1("quux")))))) -> "met condition 1",
+      "ns2" -> Funct(ListMap(
+        BinaryNode(AndCond,List(BinaryNode(OrCond,List(BooleanLeaf1("var1"), BooleanLeaf1("var2"))), BinaryNode(OrCond,List(BooleanLeaf1("var3"), UnaryNode(NotCond,BooleanLeaf1("var4")))))) -> "met condition 1",
         BooleanLeaf1("default") -> "fallback"))))
 
     val model2 = Functs[(String, String)](Map(
-      "iri1" -> Funct(ListMap(
-        BooleanLeaf2("foo","baz") -> "met condition 1",
-        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf2("foo","bar")), BooleanLeaf2("bar","default"))) -> "met condition 2",
-        BooleanLeaf2("default","default") -> "fallback")),
-      "iri2" -> Funct(ListMap(
+      "ns1" -> Funct(ListMap(
+        BooleanLeaf2("foo","baz") -> "%2$s :: %1$s",
+        BinaryNode(AndCond,List(UnaryNode(NotCond,BooleanLeaf2("foo","bar")), BooleanLeaf2("bar","default"))) -> "%2$s ::: %1$s",
+        BooleanLeaf2("default","default") -> "fallback[%s, %s]",
+        BooleanLeaf2("default","failed") -> "FAIL: %s, %s")),
+      "ns2" -> Funct(ListMap(
         BooleanLeaf2("^.*baz","quux") -> "met condition 1",
+        BooleanLeaf2("default","failed") -> "FAIL",
         BooleanLeaf2("default","default") -> "fallback"))))
 
     BooleanConfigParser.parseConfig("binary.conf") shouldEqual BooleanConfig("YES", "NO", model1, model2)
   }
 
-  "evaluate something" in {
-    val binaryConf = BooleanConfigParser.parseConfig("binary.conf")
-    binaryConf.myLogicModel("iri1")(s => "foobar".contains(s) || s == "default") shouldEqual Some("met condition 1")
-    binaryConf.myLogicModel("iri1")(s => "fiddledeedee".contains(s) || s == "default") shouldEqual Some("met condition 2")
-    binaryConf.myLogicModel("iri1")(s => "barbaz".contains(s) || s == "default") shouldEqual Some("fallback")
+  "evaluate some boolean expressions with variables" - {
+    val logicModel = BooleanConfigParser.parseConfig("binary.conf").myLogicModel
+    val defaultIsTrue = "default" -> true
+    "case 1" in {
+      val vars = Map("var1" -> true, "var2" -> true, "var3" -> false, "var4" -> false)
+      logicModel("ns1"){ vars + defaultIsTrue }.get shouldEqual "met condition 1"
+    }
+    "case 2" in {
+      val vars = Map("var1" -> false, "var2" -> false, "var3" -> false, "var4" -> false)
+      logicModel("ns1"){ vars + defaultIsTrue }.get shouldEqual "met condition 2"
+    }
+    "case 3" in {
+      val vars = Map("var1" -> false, "var2" -> true, "var3" -> true, "var4" -> false)
+      logicModel("ns1"){ vars + defaultIsTrue }.get shouldEqual "fallback"
+    }
+  }
+
+  "evaluate some more complex boolean expressions with variables" - {
+    val logicModel = BooleanConfigParser.parseConfig("binary.conf").myMoreComplexLogicModel
+    def meetsConditions(in: (String, String))(pair: (String, String)) =
+      Set(in._1, "default").contains(pair._1) && !Set(in._2).contains(pair._2)
+    def fmt(in: (String, String))(x: String) = String.format(x, in._1, in._2)
+    "case 1" in {
+      val in = ("foo", "twenty")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "twenty :: foo"
+    }
+    "case 2" in {
+      val in = ("bar", "thirty")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "thirty ::: bar"
+    }
+    "case 3" in {
+      val in = ("foobar", "forty")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "fallback[foobar, forty]"
+    }
+    "case 4" in {
+      val in = ("bar", "default")
+      logicModel("ns1"){ meetsConditions(in) }.map(fmt(in)).get shouldEqual "FAIL: bar, default"
+    }
   }
 
 }
