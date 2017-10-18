@@ -26,8 +26,8 @@ class BaseParserTest extends FreeSpec with Matchers {
     }
 
     "parse a string" in {
-      val in = """ "lzidjf#®•uy9w84منy!\"" """
-      val expected = """lzidjf#®•uy9w84منy!""""
+      val in = """ "lzidjf#\\®•uy9w84منy!\"" """
+      val expected = """lzidjf#\®•uy9w84منy!""""
       baseParser.parse(baseParser.str, in) match {
         case Success(`expected`, _) => succeed
         case _ => fail("string parsing failed")
