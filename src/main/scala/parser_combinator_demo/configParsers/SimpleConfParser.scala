@@ -24,6 +24,6 @@ object SimpleConfParser extends BaseParsers {
 
   def parseConfig(s: String): SimpleConf = parse(configParser, slurpRsc(s)) match {
     case Success(cp, _) => cp
-    case NoSuccess(f, _) => throw new RuntimeException(s"parse failure: $f")
+    case NoSuccess(f, in) => throw new RuntimeException(s"parse failure: $f @ line ${in.pos.line}, col ${in.pos.column}")
   }
 }

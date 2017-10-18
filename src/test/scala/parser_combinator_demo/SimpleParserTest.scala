@@ -17,6 +17,6 @@ class SimpleParserTest extends FreeSpec with Matchers {
   }
   "gives us an appropriate exception when parsing fails" in {
     intercept[RuntimeException](SimpleConfParser.parseConfig("badSimple.conf")).getMessage shouldEqual
-      "parse failure: `=' expected but `B' found"
+      "parse failure: `=' expected but `B' found @ line 4, col 6"
   }
 }
