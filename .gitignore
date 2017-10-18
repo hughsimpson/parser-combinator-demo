@@ -1,0 +1,7 @@
+./*
+!build.sbt
+!./project/
+!./src/
+**/target/
+.idea/
+**/*.iml
