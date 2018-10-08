@@ -1,5 +1,5 @@
 # Parser combinators
 
-## https://github.com/Babylonpartners/parser-combinator-demo
+## https://github.com/hughsimpson/parser-combinator-demo
 
 #### Hugh Simpson
